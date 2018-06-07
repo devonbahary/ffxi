@@ -1,0 +1,26 @@
+.ItemForm {
+  background: $bg-content;
+  padding: $buffer-sm;
+  @include box-shadow-gray();
+
+  input,
+  select {
+    background: none;
+    border: none;
+    margin-right: $buffer-sm;
+  }
+
+  input {
+    border-right: 1px solid gray;
+    border-bottom: 1px solid gray;
+  }
+
+  input[type="number"] {
+    text-align: right;
+    width: 100px;
+  }
+
+  input:focus {
+    outline: none;
+  }
+}

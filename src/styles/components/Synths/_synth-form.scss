@@ -1,0 +1,38 @@
+.SynthForm {
+  background: $bg-content;
+  padding: $buffer-sm;
+  border-radius: 3px;
+  @include box-shadow-gray();
+
+  input,
+  select {
+    background: none;
+    margin-right: $buffer-sm;
+  }
+
+  input {
+    border: none;
+    border-bottom: 1px solid gray;
+    border-right: 1px solid gray;
+  }
+
+  input:focus {
+    outline: none;
+  }
+
+  select {
+    border: none;
+  }
+
+  input[type="number"] {
+    text-align: right;
+  }
+
+  #lv {
+    width: 45px;
+  }
+
+  #sellPrice {
+    width: 100px;
+  }
+}

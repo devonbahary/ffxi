@@ -1,0 +1,20 @@
+.Tasks {
+  .Tasks__contents {
+    padding: 0 $buffer-sm;
+
+    ul {
+      padding-left: 2rem;
+      list-style: square;
+    }
+  }
+
+  .Tasks__addTaskButton,
+  .Tasks__addTaskButton--close {
+    opacity: 0.6;
+    margin-bottom: $buffer-sm;
+  }
+
+  .Tasks__addTaskButton--close {
+    opacity: 1;
+  }
+}

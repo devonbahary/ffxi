@@ -1,0 +1,20 @@
+.Items {
+  .Items__contents {
+    padding: 0 $buffer-sm;
+
+    ul {
+      padding-left: 2rem;
+      list-style: square;
+    }
+
+    .Items__addItemButton,
+    .Items__addItemButton--close {
+      opacity: 0.6;
+      margin-bottom: $buffer-sm;
+    }
+
+    .Items__addItemButton--close {
+      opacity: 1;
+    }
+  }
+}

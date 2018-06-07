@@ -1,0 +1,37 @@
+.TaskItem {
+  position: relative;
+  min-height: 1.5rem;
+  padding: $buffer-sm;
+  border-radius: 3px;
+
+  .TaskItem__clickable {
+    cursor: pointer;
+
+    .TaskItem__textAccomplished {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .TaskItem__buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: $buffer-sm;
+      position: absolute;
+      top: 50%; right: $buffer-sm;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%);
+      opacity: 0;
+      -webkit-transition: opacity 0.1s ease-out;
+      transition: opacity 0.1s ease-out;
+    }
+  }
+
+}
+
+.TaskItem:hover {
+  background: rgba(25, 25, 25, 0.1);
+
+  .TaskItem__buttons {
+    opacity: 1;
+  }
+}

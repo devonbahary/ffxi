@@ -1,0 +1,53 @@
+.ProfileMissions {
+  display: inline-block;
+
+  .ProfileMissions_list {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    grid-column-gap: $buffer-sm;
+    padding-left: $buffer-sm;
+
+    .ProfileMissions__mission,
+    .ProfileMissions__mission--capped {
+      display: inline-grid;
+      grid-template-columns: 60px 60px;
+
+      label {
+        opacity: 0.7;
+      }
+
+      select {
+        background: none;
+        border: none;
+      }
+
+      select:focus {
+        outline: none;
+      }
+    }
+
+    .ProfileMissions__mission:hover {
+      label {
+        opacity: 1;
+      }
+    }
+
+    .ProfileMissions__mission--capped {
+      label {
+        opacity: $opacity-capped;
+      }
+
+      select {
+        color: $color-capped
+      }
+
+      option {
+        color: black;
+      }
+
+
+    }
+  }
+
+}

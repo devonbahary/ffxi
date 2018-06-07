@@ -1,3 +1,56 @@
 * {
-  font-family: Helvetica, sans-serif;
+  font-family: monospace, sans-serif;
+  box-sizing: border-box;
+}
+
+html {
+  background: $bg-background;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: $buffer-sm 0;
+}
+
+button,
+input,
+select {
+  font-style: monospace, sans-serif;
+}
+
+#main-content {
+  padding: $buffer-sm;
+}
+
+.fire-color {
+  color: $fire-color;
+}
+
+.ice-color {
+  color: $ice-color;
+}
+
+.wind-color {
+  color: $wind-color;
+}
+
+.earth-color {
+  color: $earth-color;
+}
+
+.lightning-color {
+  color: $lightning-color;
+}
+
+.water-color {
+  color: $water-color;
+}
+
+.light-color {
+  color: $light-color;
+}
+
+.dark-color {
+  color: $dark-color;
 }

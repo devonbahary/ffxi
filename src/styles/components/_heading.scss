@@ -1,0 +1,13 @@
+.Heading {
+  .Heading__title {
+    display: inline-block;
+    background: $theme-color;
+    padding: 0 $buffer-lg;
+    border-radius: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: white;
+    margin-bottom: $buffer-sm;
+  }
+}

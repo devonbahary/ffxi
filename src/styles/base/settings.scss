@@ -1,1 +1,22 @@
+$theme-color: #3E68AD;
+$fire-color: #FF0000;
+$ice-color: #1D8D8B;
+$wind-color: #008000;
+$earth-color: #E5CB89;
+$lightning-color: #8E1D8B;
+$water-color: #0000FF;
+$light-color: #868585;
+$dark-color: #585858;
 
+$bg-content: #FAFAFA;
+$bg-background: #E8E8E8;
+
+$color-capped: royalblue;
+$opacity-capped: 0.5;
+
+$buffer-sm: 6px;
+$buffer-lg: 12px;
+
+@mixin box-shadow-gray() {
+  box-shadow: 0 0 5px gray;
+}

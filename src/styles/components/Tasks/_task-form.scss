@@ -1,0 +1,18 @@
+.TaskForm {
+  background: $bg-content;
+  padding: $buffer-sm;
+  border-radius: 3px;
+  @include box-shadow-gray();
+
+  input {
+    background: none;
+    margin-right: $buffer-sm;
+    border: none;
+    border-bottom: 1px solid gray;
+    border-right: 1px solid gray;
+  }
+
+  input:focus {
+    outline: none;
+  }
+}

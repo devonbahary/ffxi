@@ -1,0 +1,31 @@
+.SynthItem {
+  position: relative;
+  min-height: 1.5rem;
+  padding: $buffer-sm;
+  border-radius: 3px;
+
+  .SynthItem__sellPrice {
+    opacity: 0.6;
+  }
+  
+  .SynthItem__buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: $buffer-sm;
+    position: absolute;
+    top: 50%; right: $buffer-sm;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+    opacity: 0;
+    -webkit-transition: opacity 0.1s ease-out;
+    transition: opacity 0.1s ease-out;
+  }
+}
+
+.SynthItem:hover {
+  background: rgba(25, 25, 25, 0.1);
+
+  .SynthItem__buttons {
+    opacity: 1;
+  }
+}

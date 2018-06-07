@@ -1,2 +1,16 @@
-@import './base/base.scss';
 @import './base/settings.scss';
+@import './base/base.scss';
+@import './components/_heading.scss';
+@import './components/Items/_index.scss';
+@import './components/Items/_items-item.scss';
+@import './components/Items/_item-form.scss';
+@import './components/Jobs/_index.scss';
+@import './components/Profile/_index.scss';
+@import './components/Profile/_profile-fame.scss';
+@import './components/Profile/_profile-missions.scss';
+@import './components/Synths/_index.scss';
+@import './components/Synths/_synth-item.scss';
+@import './components/Synths/_synth-form.scss';
+@import './components/Tasks/_index.scss';
+@import './components/Tasks/_task-form.scss';
+@import './components/Tasks/_task-item.scss';

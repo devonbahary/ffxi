@@ -1,0 +1,20 @@
+.Synths {
+  .Synths__contents {
+    padding: 0 $buffer-sm;
+
+    ul {
+      padding-left: 2rem;
+      list-style: square;
+    }
+  }
+
+  .Synths__addSynthButton,
+  .Synths__addSynthButton--close {
+    opacity: 0.6;
+    margin-bottom: $buffer-sm;
+  }
+
+  .Synths__addSynthButton--close {
+    opacity: 1;
+  }
+}

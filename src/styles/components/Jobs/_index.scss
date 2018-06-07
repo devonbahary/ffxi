@@ -1,0 +1,62 @@
+.Jobs {
+  .Jobs__list {
+    padding: 0 $buffer-sm;
+
+    .Jobs__listItem,
+    .Jobs__listItem--capped,
+    .Jobs__listItem--locked {
+      display: inline-grid;
+      grid-template-columns: 20px 45px;
+      background: $bg-content;
+      @include box-shadow-gray();
+      padding-left: $buffer-sm;
+
+      label {
+        opacity: 0.7;
+      }
+
+      input {
+        background: none;
+        border: none;
+        text-align: right;
+      }
+
+      input:focus {
+        outline: none;
+      }
+    }
+
+    .Jobs__listItem:hover {
+      label {
+        opacity: 1;
+      }
+    }
+
+    .Jobs__listItem--capped {
+      label {
+        opacity: $opacity-capped;
+      }
+
+      input {
+        color: $color-capped;
+      }
+    }
+
+    .Jobs__listItem--locked {
+      opacity: 0.5;
+      cursor: pointer;
+
+      label {
+        cursor: pointer
+      }
+
+      input {
+        visibility: hidden;
+      }
+    }
+
+    .Jobs__listItem--locked:hover {
+      opacity: 0.7;
+    }
+  }
+}
