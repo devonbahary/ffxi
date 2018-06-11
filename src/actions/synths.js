@@ -33,3 +33,9 @@ export const removeSynth = (id) => ({
   type: 'REMOVE_SYNTH',
   id
 });
+
+// UPDATE_CRAFTS
+export const updateCrafts = (updates) => ({
+  type: 'UPDATE_CRAFTS',
+  updates
+});

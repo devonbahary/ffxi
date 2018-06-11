@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { addSynth } from '../../actions/synths';
+import { addSynth, updateCrafts } from '../../actions/synths';
 import Heading from '../Heading';
 import SynthForm from './SynthForm';
 import SynthItem from './SynthItem';
@@ -16,6 +16,15 @@ class Synths extends React.Component {
   };
 
   handleToggleAddSynth = () => this.setState((prevState) => ({ isAddSynth: !prevState.isAddSynth }));
+
+  handleCraftChange = (e, craft) => {
+    let updates = {}
+    const lv = Number(e.target.value);
+    if (lv >= 0 && lv <= 110) {
+      updates[craft] = lv;
+      this.props.updateCrafts(updates);
+    }
+  };
 
   render() {
     return (
@@ -45,6 +54,25 @@ class Synths extends React.Component {
           {this.state.isAddSynth && (
             <SynthForm onSubmit={this.addSynth} />
           )}
+          <ul className="Synths__crafts">
+            {Object.entries(this.props.crafts).map(craft => (
+              <li
+                key={craft[0]}
+                className={craft[1] == 110 ? "Synths__craftItem--capped" : "Synths__craftItem"}
+              >
+                <label htmlFor={craft[0]}>
+                  {craft[0]}
+                </label>
+                <input
+                  type="number"
+                  value={craft[1]}
+                  onChange={(e) => this.handleCraftChange(e, craft[0])}
+                  min="0"
+                  max="110"
+                />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     );
@@ -52,11 +80,13 @@ class Synths extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  synths: state.synths
+  synths: state.synths.items,
+  crafts: state.synths.crafts
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  addSynth: (synth) => dispatch(addSynth(synth))
+  addSynth: (synth) => dispatch(addSynth(synth)),
+  updateCrafts: (updates) => dispatch(updateCrafts(updates))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Synths);

@@ -17,4 +17,47 @@
   .Synths__addSynthButton--close {
     opacity: 1;
   }
+
+  ul.Synths__crafts {
+    padding-left: 0;
+
+    .Synths__craftItem,
+    .Synths__craftItem--capped {
+      display: inline-grid;
+      grid-template-columns: 90px 45px;
+      background: $bg-content;
+      @include box-shadow-gray();
+      padding-left: $buffer-sm;
+
+      label {
+        opacity: 0.7;
+      }
+
+      input {
+        background: none;
+        border: none;
+        text-align: right;
+      }
+
+      input:focus {
+        outline: none;
+      }
+    }
+
+    .Synths__craftItem:hover {
+      label {
+        opacity: 1;
+      }
+    }
+
+    .Synths__craftItem--capped {
+      label {
+        opacity: $opacity-capped;
+      }
+
+      input {
+        color: $color-capped;
+      }
+    }
+  }
 }
