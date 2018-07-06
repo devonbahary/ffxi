@@ -12,7 +12,8 @@ export const addSynth = (synth = {
   craft ='Alchemy',
   lv = 1,
   type = 'profit',
-  sellPrice = 0
+  sellPrice = 0,
+  rate = 'Average'
 } = {}) => ({
   type: 'ADD_SYNTH',
   synth: {

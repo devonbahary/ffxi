@@ -7,7 +7,8 @@ class SynthForm extends React.Component {
     lv: this.props.synth ? this.props.synth.lv : 1,
     crystal: this.props.synth ? this.props.synth.crystal : 'Fire',
     type: this.props.synth ? this.props.synth.type : 'profit',
-    sellPrice: this.props.synth ? this.props.synth.sellPrice : 0
+    sellPrice: this.props.synth ? this.props.synth.sellPrice : 0,
+    rate: this.props.synth ? this.props.synth.rate : 'Average'
   };
 
   handleCraftChange = (e) => {
@@ -44,11 +45,17 @@ class SynthForm extends React.Component {
     }
   };
 
+  handleRateChange = (e) => {
+    const rate = e.target.value;
+    this.setState(() => ({ rate }));
+  };
+
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.onSubmit({
       ...this.state,
-      sellPrice: this.state.type === 'synth' ? 0 : this.state.sellPrice
+      sellPrice: this.state.type === 'synth' ? 0 : this.state.sellPrice,
+      rate: this.state.type === 'synth' ? 'Average' : this.state.rate
     });
     this.setState(() => ({
       name: '',
@@ -56,7 +63,8 @@ class SynthForm extends React.Component {
       lv: 1,
       crystal: 'Fire',
       type: 'profit',
-      sellPrice: 0
+      sellPrice: 0,
+      rate: 'Average'
     }))
   };
 
@@ -64,6 +72,7 @@ class SynthForm extends React.Component {
     const elements = ['Fire', 'Ice', 'Wind', 'Earth', 'Lightning', 'Water', 'Light', 'Dark'];
     const crafts = ['Alchemy', 'Bonecraft', 'Clothcraft', 'Cooking', 'Fishing', 'Goldsmithing',
       'Leathercraft', 'Smithing', 'Woodworking'];
+    const rates = ['Very Fast', 'Fast', 'Average', 'Slow', 'Very Slow', 'Dead Slow'];
 
     return (
       <form
@@ -121,17 +130,36 @@ class SynthForm extends React.Component {
             </select>
             {this.state.type === 'profit' && (
               <span>
-                <label htmlFor="sellPrice">
-                  Price
-                </label>
-                <input
-                  id="sellPrice"
-                  type="number"
-                  value={this.state.sellPrice}
-                  onChange={this.handleSellPriceChange}
-                  step="100"
-                  min="0"
-                />
+                <span>
+                  <label htmlFor="sellPrice">
+                    Price
+                  </label>
+                  <input
+                    id="sellPrice"
+                    type="number"
+                    value={this.state.sellPrice}
+                    onChange={this.handleSellPriceChange}
+                    step="100"
+                    min="0"
+                  />
+                </span>
+                <span>
+                  <label htmlFor="rate">
+                    Rate
+                  </label>
+                  <select
+                    id="rate"
+                    value={this.state.rate}
+                    onChange={this.handleRateChange}
+                    className={`${this.state.rate.toLowerCase().split(' ').join('-')}-color`}
+                    >
+                      {rates.map((rate, index) => (
+                        <option key={index} value={rate} className={`${rate.toLowerCase().split(' ').join('-')}-color`}>
+                          {rate}
+                        </option>
+                      ))}
+                    </select>
+                  </span>
               </span>
             )}
             <button type="submit">

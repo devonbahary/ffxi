@@ -16,14 +16,17 @@ class SynthItem extends React.Component {
   handleToggleEdit = () => this.setState((prevState) => ({ isEdit: !prevState.isEdit }));
 
   render() {
-    const { name, craft, lv, crystal, sellPrice } = this.props.synth;
+    const { name, craft, lv, crystal, sellPrice, rate } = this.props.synth;
     return (
       <div className="SynthItem">
         {this.state.isEdit ? (
           <SynthForm synth={this.props.synth} onSubmit={this.editSynth} onCancel={this.handleToggleEdit} />
         ) : (
           <div>
-            [{craft}] <span className={`${crystal.toLowerCase()}-color`}>{name}</span>({lv}) {!!sellPrice && (<span className="SynthItem__sellPrice">{sellPrice}g</span>)}
+            [{craft}]
+            <span className={`${crystal.toLowerCase()}-color`}>{name}</span>({lv})
+            {!!sellPrice && (<span className="SynthItem__sellPrice">{sellPrice}g</span>)}
+            {!!rate && (<span className={`${rate.toLowerCase().split(' ').join('-')}-color`}>{rate}</span>)}
             <div className="SynthItem__buttons">
               <button type="button" onClick={this.handleToggleEdit}>
                 Edit
