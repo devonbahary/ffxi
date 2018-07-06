@@ -8,6 +8,7 @@ class SynthForm extends React.Component {
     crystal: this.props.synth ? this.props.synth.crystal : 'Fire',
     type: this.props.synth ? this.props.synth.type : 'profit',
     sellPrice: this.props.synth ? this.props.synth.sellPrice : 0,
+    unit: this.props.synth ? this.props.synth.unit : 'stack',
     rate: this.props.synth ? this.props.synth.rate : 'Average'
   };
 
@@ -45,6 +46,11 @@ class SynthForm extends React.Component {
     }
   };
 
+  handleUnitChange = (e) => {
+    const unit = e.target.value;
+    this.setState(() => ({ unit }));
+  };
+
   handleRateChange = (e) => {
     const rate = e.target.value;
     this.setState(() => ({ rate }));
@@ -55,6 +61,7 @@ class SynthForm extends React.Component {
     this.props.onSubmit({
       ...this.state,
       sellPrice: this.state.type === 'synth' ? 0 : this.state.sellPrice,
+      stack: this.state.type === 'synth' ? 'single' : this.state.unit,
       rate: this.state.type === 'synth' ? 'Average' : this.state.rate
     });
     this.setState(() => ({
@@ -64,6 +71,7 @@ class SynthForm extends React.Component {
       crystal: 'Fire',
       type: 'profit',
       sellPrice: 0,
+      unit: 'stack',
       rate: 'Average'
     }))
   };
@@ -143,6 +151,17 @@ class SynthForm extends React.Component {
                     min="0"
                   />
                 </span>
+                <select
+                  value={this.state.unit}
+                  onChange={this.handleUnitChange}
+                >
+                  <option value='stack'>
+                    stack
+                  </option>
+                  <option value='single'>
+                    single
+                  </option>
+                </select>
                 <span>
                   <label htmlFor="rate">
                     Rate
@@ -152,14 +171,14 @@ class SynthForm extends React.Component {
                     value={this.state.rate}
                     onChange={this.handleRateChange}
                     className={`${this.state.rate.toLowerCase().split(' ').join('-')}-color`}
-                    >
-                      {rates.map((rate, index) => (
-                        <option key={index} value={rate} className={`${rate.toLowerCase().split(' ').join('-')}-color`}>
-                          {rate}
-                        </option>
-                      ))}
-                    </select>
-                  </span>
+                  >
+                    {rates.map((rate, index) => (
+                      <option key={index} value={rate} className={`${rate.toLowerCase().split(' ').join('-')}-color`}>
+                        {rate}
+                      </option>
+                    ))}
+                  </select>
+                </span>
               </span>
             )}
             <button type="submit">

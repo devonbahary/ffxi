@@ -13,6 +13,7 @@ export const addSynth = (synth = {
   lv = 1,
   type = 'profit',
   sellPrice = 0,
+  unit = 'stack',
   rate = 'Average'
 } = {}) => ({
   type: 'ADD_SYNTH',

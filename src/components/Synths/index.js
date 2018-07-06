@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { addSynth, updateCrafts } from '../../actions/synths';
+import synthFilter from '../../selectors/synths';
 import Heading from '../Heading';
 import SynthForm from './SynthForm';
 import SynthItem from './SynthItem';
@@ -80,7 +81,7 @@ class Synths extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  synths: state.synths.items,
+  synths: synthFilter(state.synths.items),
   crafts: state.synths.crafts
 });
 
