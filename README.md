@@ -63,23 +63,21 @@ npm run dev:backend
 Build and run for production:
 
 ```bash
-# Build both
+# Build both frontend and backend
 npm run build
-
-# Or build individually
-npm run build:frontend
-npm run build:backend
 ```
 
-Then start the backend:
+Then start the backend (which will serve the frontend):
 ```bash
 cd backend
 npm start
 ```
 
+The application will be available at `http://localhost:3001` with both the React frontend and API endpoints served from the same port.
+
 ## API Endpoints
 
-- `GET /api/hello` - Returns a hello world message
+- `GET /api/health` - Returns server health status
 
 ## Technology Stack
 
