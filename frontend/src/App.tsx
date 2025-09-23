@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -10,9 +10,11 @@ function App() {
           FFXI Project
         </h1>
         <div className="text-center">
-          <p className="text-gray-600 mb-4">Full Stack App with React + TypeScript</p>
+          <p className="text-gray-600 mb-4">
+            Full Stack App with React + TypeScript
+          </p>
           <button
-            onClick={() => setCount((count) => count + 1)}
+            onClick={() => setCount(count => count + 1)}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200"
           >
             Count: {count}
@@ -23,7 +25,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

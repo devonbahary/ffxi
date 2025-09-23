@@ -1,12 +1,15 @@
 # Task 001: Setup Full Stack App (React + Tailwind + Express)
 
 ## Goal
+
 Initialize a full stack TypeScript project with:
+
 - **Frontend**: React + TailwindCSS
 - **Backend**: Node.js + Express
 - Shared config (e.g. package management, prettier, eslint, gitignore)
 
 ## Requirements
+
 - Frontend in `/frontend`
   - Bootstrapped with Vite + React
   - TailwindCSS configured
@@ -17,6 +20,7 @@ Initialize a full stack TypeScript project with:
 - Root-level `README.md` explaining how to run both servers
 
 ## Steps
+
 1. Initialize a monorepo structure
 2. Setup React frontend:
    - Use Vite for fast dev server

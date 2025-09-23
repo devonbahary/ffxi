@@ -26,6 +26,7 @@ npm install
 ```
 
 This single command will:
+
 - Install root dependencies
 - Install frontend dependencies
 - Install backend dependencies
@@ -43,6 +44,7 @@ npm run dev
 ```
 
 This will start:
+
 - **Frontend** on `http://localhost:5173`
 - **Backend** on `http://localhost:3001`
 
@@ -68,6 +70,7 @@ npm run build
 ```
 
 Then start the backend (which will serve the frontend):
+
 ```bash
 cd backend
 npm start
@@ -82,12 +85,14 @@ The application will be available at `http://localhost:3001` with both the React
 ## Technology Stack
 
 ### Frontend
+
 - React 18
 - TypeScript
 - TailwindCSS
 - Vite
 
 ### Backend
+
 - Node.js
 - Express
 - TypeScript

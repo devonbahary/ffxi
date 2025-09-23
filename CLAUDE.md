@@ -17,6 +17,7 @@ Since this is a fresh repository, you'll need to:
 ## Development Workflow
 
 Once the project structure is established, common commands should be documented here including:
+
 - Build commands
 - Test execution
 - Linting and formatting

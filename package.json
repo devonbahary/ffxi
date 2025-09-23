@@ -13,10 +13,32 @@
     "dev:backend": "cd backend && npm run dev",
     "build": "npm run build:frontend && npm run build:backend",
     "build:frontend": "cd frontend && npm run build",
-    "build:backend": "cd backend && npm run build"
+    "build:backend": "cd backend && npm run build",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:fix": "npm run lint:frontend -- --fix && npm run lint:backend -- --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "prepare": "husky"
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "prettier": "^3.0.0",
+    "eslint": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.0"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "keywords": [
     "typescript",
