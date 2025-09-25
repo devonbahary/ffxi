@@ -3,31 +3,78 @@ import * as cheerio from 'cheerio';
 import { createGunzip } from 'zlib';
 import { Readable } from 'stream';
 
-export interface SitemapUrl {
-  loc: string;
-  lastmod?: string;
-  changefreq?: string;
-}
+export class BGWikiSitemapParser {
+  private static readonly USER_AGENT = 'FFXI-Crawler/1.0 (Educational Purpose)';
+  private static readonly TIMEOUT = 10000;
+  private static readonly BG_WIKI_ROBOTS_URL =
+    'https://www.bg-wiki.com/robots.txt';
 
-export interface SitemapIndex {
-  loc: string;
-  lastmod?: string;
-}
+  async fetchSitemapUrls(): Promise<string[]> {
+    // Step 1: Get sitemap URL from robots.txt
+    console.log(
+      `Fetching robots.txt from ${BGWikiSitemapParser.BG_WIKI_ROBOTS_URL}`
+    );
+    const sitemapUrl = await this.fetchSitemapUrlFromRobots(
+      BGWikiSitemapParser.BG_WIKI_ROBOTS_URL
+    );
 
-export class SitemapParser {
-  private userAgent: string;
+    if (!sitemapUrl) {
+      throw new Error('No sitemap found in robots.txt');
+    }
 
-  constructor(userAgent = 'FFXI-Crawler/1.0 (Educational Purpose)') {
-    this.userAgent = userAgent;
+    // Step 2: Parse sitemap and return URLs
+    console.log(`Processing sitemap: ${sitemapUrl}`);
+    const urls = await this.fetchAndParseSitemap(sitemapUrl);
+    return urls.map(url => url.loc);
   }
 
-  async fetchAndParse(sitemapUrl: string): Promise<SitemapUrl[]> {
+  private async fetchContent(url: string): Promise<string> {
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': BGWikiSitemapParser.USER_AGENT,
+      },
+      timeout: BGWikiSitemapParser.TIMEOUT,
+    });
+
+    return typeof response.data === 'string'
+      ? response.data
+      : response.data.toString();
+  }
+
+  private async fetchSitemapUrlFromRobots(
+    robotsUrl: string
+  ): Promise<string | null> {
+    try {
+      const content = await this.fetchContent(robotsUrl);
+      return this.parseRobotsTxt(content);
+    } catch (error) {
+      console.error(`Error fetching robots.txt from ${robotsUrl}:`, error);
+      throw error;
+    }
+  }
+
+  private parseRobotsTxt(content: string): string | null {
+    const match = content.match(/^sitemap:\s*(.+)$/im);
+
+    if (match) {
+      const sitemapUrl = match[1].trim();
+      console.log(`Found sitemap: ${sitemapUrl}`);
+      return sitemapUrl;
+    }
+
+    console.log('No sitemap found in robots.txt');
+    return null;
+  }
+
+  private async fetchAndParseSitemap(
+    sitemapUrl: string
+  ): Promise<Array<{ loc: string }>> {
     try {
       console.log(`Fetching sitemap: ${sitemapUrl}`);
 
       const response = await axios.get(sitemapUrl, {
         headers: {
-          'User-Agent': this.userAgent,
+          'User-Agent': BGWikiSitemapParser.USER_AGENT,
           'Accept-Encoding': 'gzip',
         },
         timeout: 30000,
@@ -83,9 +130,11 @@ export class SitemapParser {
     return content.includes('<sitemapindex') || content.includes('<sitemap>');
   }
 
-  private async parseSitemapIndex(content: string): Promise<SitemapUrl[]> {
+  private async parseSitemapIndex(
+    content: string
+  ): Promise<Array<{ loc: string }>> {
     const $ = cheerio.load(content, { xmlMode: true });
-    const sitemapIndexes: SitemapIndex[] = [];
+    const sitemapIndexes: Array<{ loc: string; lastmod?: string }> = [];
 
     $('sitemap').each((_, element) => {
       const loc = $(element).find('loc').text().trim();
@@ -111,15 +160,13 @@ export class SitemapParser {
 
     console.log(`Processing ${limitedSitemaps.length} sitemaps`);
 
-    const allUrls: SitemapUrl[] = [];
+    const allUrls: Array<{ loc: string }> = [];
 
     for (const sitemapIndex of limitedSitemaps) {
       try {
         console.log(`Parsing sitemap: ${sitemapIndex.loc}`);
-        const urls = await this.fetchAndParse(sitemapIndex.loc);
+        const urls = await this.fetchAndParseSitemap(sitemapIndex.loc);
         allUrls.push(...urls);
-
-        // No delay for sitemap parsing - robots.txt delay applies to page content, not sitemaps
       } catch (error) {
         console.error(`Error parsing sitemap ${sitemapIndex.loc}:`, error);
       }
@@ -128,29 +175,19 @@ export class SitemapParser {
     return allUrls;
   }
 
-  private parseSitemap(content: string): SitemapUrl[] {
+  private parseSitemap(content: string): Array<{ loc: string }> {
     const $ = cheerio.load(content, { xmlMode: true });
-    const urls: SitemapUrl[] = [];
+    const urls: Array<{ loc: string }> = [];
 
     $('url').each((_, element) => {
       const loc = $(element).find('loc').text().trim();
-      const lastmod = $(element).find('lastmod').text().trim();
-      const changefreq = $(element).find('changefreq').text().trim();
 
       if (loc) {
-        urls.push({
-          loc,
-          lastmod: lastmod || undefined,
-          changefreq: changefreq || undefined,
-        });
+        urls.push({ loc });
       }
     });
 
     console.log(`Found ${urls.length} URLs in sitemap`);
     return urls;
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
