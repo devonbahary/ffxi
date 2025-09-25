@@ -2,9 +2,8 @@ import { PageProcessor } from './page-processor';
 
 async function main() {
   const workerId = process.argv[2] || `worker-${Date.now()}`;
-  const maxUrls = parseInt(process.argv[3] || '10');
 
-  console.log(`Starting page processor ${workerId} (max URLs: ${maxUrls})`);
+  console.log(`Starting continuous page processor ${workerId}`);
 
   const processor = new PageProcessor(workerId);
 
@@ -23,13 +22,11 @@ async function main() {
 
   try {
     await processor.initialize();
-    await processor.processUrls(maxUrls);
-    console.log('Processing completed successfully');
+    await processor.run(); // This runs continuously until shutdown
   } catch (error) {
     console.error('Error in processing:', error);
-    process.exit(1);
-  } finally {
     await processor.shutdown();
+    process.exit(1);
   }
 }
 

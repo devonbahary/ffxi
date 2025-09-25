@@ -9,6 +9,7 @@ This is a full-stack FFXI (Final Fantasy XI) project with multiple packages incl
 ## Development Workflow
 
 Code quality is handled automatically by Husky pre-commit hooks that run `lint-staged`, which will:
+
 - Fix ESLint issues automatically
 - Format code with Prettier
 - Only process staged files for efficiency
@@ -18,17 +19,20 @@ No manual intervention needed - just commit your changes and the hooks handle th
 ## Common Commands
 
 ### Code Quality (optional/on-demand)
+
 - `npm run lint` - check for lint issues across all workspaces
 - `npm run lint:fix` - automatically fix lint issues across all workspaces
 - `npm run format` - format all files with Prettier
 
 ### Development
+
 - `npm run dev` - start development server with hot reload
 - `npm run dev:once` - run once without hot reload
 - `npm run build` - TypeScript compilation
 - `npm run start` - run compiled JavaScript
 
 ### Testing
+
 - Testing commands will be documented as they're established
 
 ## Architecture Notes

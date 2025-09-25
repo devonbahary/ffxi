@@ -1,37 +1,31 @@
 {
-  "name": "@ffxi/discovery",
+  "name": "@ffxi/redis",
   "version": "1.0.0",
-  "description": "URL discovery service for BG-Wiki crawler",
+  "description": "Redis queue package for FFXI project",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts",
-    "dev:once": "ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix"
   },
   "keywords": [
     "ffxi",
-    "crawler",
-    "discovery",
-    "sitemap"
+    "redis",
+    "queue"
   ],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "devDependencies": {
     "@types/node": "^24.5.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
     "eslint": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "nodemon": "^3.0.0"
+    "@typescript-eslint/parser": "^8.0.0"
   },
   "dependencies": {
-    "@ffxi/redis": "*",
-    "axios": "^1.7.0",
-    "cheerio": "^1.0.0"
+    "redis": "^4.7.0"
   }
 }

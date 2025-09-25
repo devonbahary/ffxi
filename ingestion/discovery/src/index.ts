@@ -1,5 +1,5 @@
 import { BGWikiSitemapParser } from './bg-wiki-sitemap-parser';
-import { RedisQueue } from './redis-queue';
+import { RedisQueue } from '@ffxi/redis';
 
 async function main() {
   const parser = new BGWikiSitemapParser();

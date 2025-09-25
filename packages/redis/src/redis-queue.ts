@@ -1,8 +1,8 @@
 import { createClient, RedisClientType } from 'redis';
 
 export class RedisQueue {
-  private client: RedisClientType;
-  private queueName: string;
+  protected client: RedisClientType;
+  protected queueName: string;
 
   constructor(queueName = 'bg-wiki-urls', redisUrl?: string) {
     this.queueName = queueName;
@@ -63,20 +63,5 @@ export class RedisQueue {
     const urls = await this.client.sRandMemberCount(this.queueName, count);
     if (!urls || urls.length === 0) return [];
     return urls;
-  }
-
-  // Cooldown functionality for rate limiting
-  async setCooldown(key: string, durationSeconds: number): Promise<void> {
-    await this.client.setEx(key, durationSeconds, 'cooldown');
-    console.log(`Set cooldown key ${key} for ${durationSeconds} seconds`);
-  }
-
-  async isCooldownActive(key: string): Promise<boolean> {
-    const result = await this.client.exists(key);
-    return result === 1;
-  }
-
-  async getCooldownTTL(key: string): Promise<number> {
-    return await this.client.ttl(key);
   }
 }

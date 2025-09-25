@@ -32,74 +32,78 @@ export class PageProcessor {
     console.log(`Page processor ${this.workerId} shutdown`);
   }
 
-  async processUrls(maxUrls = 10): Promise<void> {
+  async run(): Promise<void> {
+    console.log(`Worker ${this.workerId} starting continuous processing...`);
     let processedCount = 0;
+    const emptyQueueSleepMs = 10000; // 10 seconds
 
-    while (processedCount < maxUrls) {
-      // Check if there are URLs in the queue
-      const queueSize = await this.redisQueue.getQueueSize();
-      if (queueSize === 0) {
-        console.log('No more URLs in queue');
-        break;
-      }
-
-      // Check for global cooldown
-      if (await this.redisQueue.isCooldownActive(this.globalCooldownKey)) {
-        const ttl = await this.redisQueue.getCooldownTTL(
-          this.globalCooldownKey
-        );
-        console.log(`Global cooldown active, waiting ${ttl} seconds...`);
-        await new Promise(resolve => setTimeout(resolve, (ttl + 1) * 1000));
-        continue;
-      }
-
-      // Get next URL from queue
-      const url = await this.redisQueue.popUrl();
-      if (!url) {
-        console.log('No URL available (possible race condition)');
-        continue;
-      }
-
+    while (true) {
       try {
-        console.log(`Processing URL ${processedCount + 1}/${maxUrls}: ${url}`);
-        await this.processUrl(url);
-        processedCount++;
-        this.rateLimiter.onSuccess();
-      } catch (error) {
-        console.error(`Error processing URL ${url}:`, error);
-
-        if (error instanceof AxiosError) {
-          const statusCode = error.response?.status;
-
-          if (statusCode === 429 || statusCode === 503 || statusCode === 403) {
-            // Handle rate limiting by setting global cooldown
-            const retryAfter =
-              this.parseRetryAfter(error.response?.headers['retry-after']) ||
-              30;
-            await this.redisQueue.setCooldown(
-              this.globalCooldownKey,
-              retryAfter
-            );
-            console.log(
-              `Set global cooldown for ${retryAfter} seconds due to status ${statusCode}`
-            );
-
-            // Put URL back in queue for retry
-            await this.redisQueue.pushUrls([url]);
-          }
-
-          this.rateLimiter.onError(statusCode);
+        // Check if there are URLs in the queue
+        const queueSize = await this.redisQueue.getQueueSize();
+        if (queueSize === 0) {
+          console.log(`No URLs in queue. Sleeping for ${emptyQueueSleepMs / 1000} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, emptyQueueSleepMs));
+          continue;
         }
+
+        // Check for global cooldown
+        if (await this.redisQueue.isCooldownActive(this.globalCooldownKey)) {
+          const ttl = await this.redisQueue.getCooldownTTL(
+            this.globalCooldownKey
+          );
+          console.log(`Global cooldown active, waiting ${ttl} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, (ttl + 1) * 1000));
+          continue;
+        }
+
+        // Get next URL from queue
+        const url = await this.redisQueue.popUrl();
+        if (!url) {
+          console.log('No URL available (possible race condition)');
+          continue;
+        }
+
+        try {
+          console.log(`Processing URL (total processed: ${processedCount}): ${url}`);
+          await this.processUrl(url);
+          processedCount++;
+          this.rateLimiter.onSuccess();
+        } catch (error) {
+          console.error(`Error processing URL ${url}:`, error);
+
+          if (error instanceof AxiosError) {
+            const statusCode = error.response?.status;
+
+            if (statusCode === 429 || statusCode === 503 || statusCode === 403) {
+              // Handle rate limiting by setting global cooldown
+              const retryAfter =
+                this.parseRetryAfter(error.response?.headers['retry-after']) ||
+                30;
+              await this.redisQueue.setCooldown(
+                this.globalCooldownKey,
+                retryAfter
+              );
+              console.log(
+                `Set global cooldown for ${retryAfter} seconds due to status ${statusCode}`
+              );
+
+              // Put URL back in queue for retry
+              await this.redisQueue.pushUrls([url]);
+            }
+
+            this.rateLimiter.onError(statusCode);
+          }
+        }
+
+        // Apply worker-level rate limiting
+        await this.rateLimiter.waitForNextRequest();
+      } catch (error) {
+        console.error('Unexpected error in processing loop:', error);
+        // Sleep briefly to avoid tight error loops
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
-
-      // Apply worker-level rate limiting
-      await this.rateLimiter.waitForNextRequest();
     }
-
-    const stats = this.rateLimiter.getStats();
-    console.log(
-      `Worker ${this.workerId} completed. Processed: ${processedCount}, Total requests: ${stats.requestCount}`
-    );
   }
 
   private async processUrl(url: string): Promise<void> {
