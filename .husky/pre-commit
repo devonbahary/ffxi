@@ -1,1 +1,14 @@
-npx lint-staged
+#!/bin/bash
+# Check if we're in WSL/Linux environment
+if command -v npx >/dev/null 2>&1; then
+  npx lint-staged
+else
+  # Fallback for Windows - try to find npx in common locations
+  if command -v npm >/dev/null 2>&1; then
+    npm exec lint-staged
+  else
+    echo "Warning: npm/npx not found in PATH. Skipping lint-staged."
+    echo "Please run 'npm run lint:fix && npm run format' manually before committing."
+    exit 0
+  fi
+fi

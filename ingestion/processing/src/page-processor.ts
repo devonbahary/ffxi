@@ -42,7 +42,9 @@ export class PageProcessor {
         // Check if there are URLs in the queue
         const queueSize = await this.redisQueue.getQueueSize();
         if (queueSize === 0) {
-          console.log(`No URLs in queue. Sleeping for ${emptyQueueSleepMs / 1000} seconds...`);
+          console.log(
+            `No URLs in queue. Sleeping for ${emptyQueueSleepMs / 1000} seconds...`
+          );
           await new Promise(resolve => setTimeout(resolve, emptyQueueSleepMs));
           continue;
         }
@@ -65,7 +67,9 @@ export class PageProcessor {
         }
 
         try {
-          console.log(`Processing URL (total processed: ${processedCount}): ${url}`);
+          console.log(
+            `Processing URL (total processed: ${processedCount}): ${url}`
+          );
           await this.processUrl(url);
           processedCount++;
           this.rateLimiter.onSuccess();
@@ -75,7 +79,11 @@ export class PageProcessor {
           if (error instanceof AxiosError) {
             const statusCode = error.response?.status;
 
-            if (statusCode === 429 || statusCode === 503 || statusCode === 403) {
+            if (
+              statusCode === 429 ||
+              statusCode === 503 ||
+              statusCode === 403
+            ) {
               // Handle rate limiting by setting global cooldown
               const retryAfter =
                 this.parseRetryAfter(error.response?.headers['retry-after']) ||
@@ -110,7 +118,7 @@ export class PageProcessor {
     // Fetch the web page
     const response = await axios.get(url, {
       headers: {
-        'User-Agent': 'FFXI-Crawler/1.0 (Educational Purpose)',
+        'User-Agent': `FFXI-Crawler/1.0 (Educational Purpose; Worker: ${this.workerId})`,
       },
       timeout: 15000,
     });
