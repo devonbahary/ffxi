@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_DATABASE || 'ffxi_dev',
   synchronize: process.env.NODE_ENV !== 'production',
-  logging: process.env.NODE_ENV === 'development',
+  logging: false,
   entities: [BgWikiPage],
   migrations: ['dist/migrations/*.js'],
   subscribers: ['dist/subscribers/*.js'],
