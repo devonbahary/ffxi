@@ -1,0 +1,41 @@
+services:
+  # Discovery service - manual one-time execution (production)
+  discovery:
+    build:
+      context: .
+      target: production
+    command: ["node", "ingestion/discovery/dist/index.js"]
+    environment:
+      NODE_ENV: production
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE:-ffxi_prod}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: "no"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - default
+
+networks:
+  default:
+    name: ffxi-crawler-prod
+    external: true
