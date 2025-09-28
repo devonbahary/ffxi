@@ -11,6 +11,7 @@ COPY package*.json ./
 COPY frontend/package*.json ./frontend/
 COPY backend/package*.json ./backend/
 COPY packages/sql/package*.json ./packages/sql/
+COPY packages/redis/package*.json ./packages/redis/
 COPY ingestion/discovery/package*.json ./ingestion/discovery/
 COPY ingestion/processing/package*.json ./ingestion/processing/
 
@@ -30,14 +31,24 @@ COPY package*.json ./
 COPY frontend/package*.json ./frontend/
 COPY backend/package*.json ./backend/
 COPY packages/sql/package*.json ./packages/sql/
+COPY packages/redis/package*.json ./packages/redis/
 COPY ingestion/discovery/package*.json ./ingestion/discovery/
 COPY ingestion/processing/package*.json ./ingestion/processing/
+
+# Copy workspace package files first (needed for workspace resolution)
+COPY packages/sql/src ./packages/sql/src
+COPY packages/sql/tsconfig.json ./packages/sql/
+COPY packages/redis/src ./packages/redis/src
+COPY packages/redis/tsconfig.json ./packages/redis/
 
 # Install all dependencies including dev
 RUN npm ci
 
-# Copy source code
+# Copy remaining source code
 COPY . .
+
+# Build workspace packages first (required for development mode)
+RUN npm run build:packages
 
 # Build all packages
 RUN npm run build
@@ -54,6 +65,8 @@ WORKDIR /app
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=development /app/packages/sql/dist ./packages/sql/dist
 COPY --from=development /app/packages/sql/package.json ./packages/sql/
+COPY --from=development /app/packages/redis/dist ./packages/redis/dist
+COPY --from=development /app/packages/redis/package.json ./packages/redis/
 COPY --from=development /app/ingestion/discovery/dist ./ingestion/discovery/dist
 COPY --from=development /app/ingestion/discovery/package.json ./ingestion/discovery/
 COPY --from=development /app/ingestion/processing/dist ./ingestion/processing/dist
