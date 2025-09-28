@@ -32,7 +32,7 @@ async function main() {
       // Peek at some URLs
       const sampleUrls = await queue.peekUrls(5);
       console.log('\nSample URLs in queue:');
-      sampleUrls.forEach((url, index) => {
+      sampleUrls.forEach((url: string, index: number) => {
         console.log(`  ${index + 1}. ${url}`);
       });
     }
