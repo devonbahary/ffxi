@@ -1,4 +1,6 @@
 import { HtmlCleaner } from '../html-cleaner';
+import * as fs from 'fs';
+import * as path from 'path';
 
 describe('HtmlCleaner', () => {
   let cleaner: HtmlCleaner;
@@ -189,20 +191,23 @@ describe('HtmlCleaner', () => {
       const result = cleaner.cleanHtml(mockNinjaHtml);
 
       expect(result).toContain('<table');
-      expect(result).toContain('class="wikitable"');
       expect(result).toContain('<tr>');
       expect(result).toContain('<td');
       expect(result).toContain('Stealth I');
       expect(result).toContain('Dual Wield I');
+      // Classes should be removed as they are primarily for styling
+      expect(result).not.toContain('class="wikitable"');
     });
 
-    it('should preserve images and their attributes', () => {
+    it('should preserve images and semantic attributes', () => {
       const result = cleaner.cleanHtml(mockNinjaHtml);
 
       expect(result).toContain('<img');
       expect(result).toContain('Ninja.jpg');
-      expect(result).toContain('width="300"');
-      expect(result).toContain('height="533"');
+      expect(result).toContain('alt="Ninja"');
+      // Width and height are layout attributes, not semantic, so they should be removed
+      expect(result).not.toContain('width="300"');
+      expect(result).not.toContain('height="533"');
     });
   });
 
@@ -375,6 +380,51 @@ describe('HtmlCleaner', () => {
       expect(lastModified).toBeNull();
       expect(preview).toBe('');
       expect(cleaned).toBeDefined();
+    });
+  });
+
+  describe('real-world HTML processing', () => {
+    it('should process actual bg-wiki Ninja page HTML correctly', () => {
+      // Read the input HTML file
+      const inputHtml = fs.readFileSync(
+        path.join(__dirname, 'bg-wiki-ninja-page.html'),
+        'utf-8'
+      );
+
+      // Read the expected output HTML file
+      const expectedHtml = fs.readFileSync(
+        path.join(__dirname, 'bg-wiki-ninja-page-expected.html'),
+        'utf-8'
+      );
+
+      // Process the input HTML
+      const actualHtml = cleaner.cleanHtml(inputHtml);
+
+      // Compare actual output with expected output
+      expect(actualHtml).toBe(expectedHtml);
+    });
+
+    it('should extract title from actual bg-wiki Ninja page', () => {
+      const inputHtml = fs.readFileSync(
+        path.join(__dirname, 'bg-wiki-ninja-page.html'),
+        'utf-8'
+      );
+
+      const title = cleaner.extractTitle(inputHtml);
+
+      expect(title).toBe('Ninja');
+    });
+
+    it('should extract last modified date from actual bg-wiki Ninja page', () => {
+      const inputHtml = fs.readFileSync(
+        path.join(__dirname, 'bg-wiki-ninja-page.html'),
+        'utf-8'
+      );
+
+      const lastModified = cleaner.extractLastModified(inputHtml);
+
+      expect(lastModified).toBeInstanceOf(Date);
+      expect(lastModified?.getFullYear()).toBeGreaterThanOrEqual(2024);
     });
   });
 });

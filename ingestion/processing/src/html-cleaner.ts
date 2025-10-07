@@ -4,6 +4,9 @@ export class HtmlCleaner {
   cleanHtml(html: string): string {
     const $ = cheerio.load(html);
 
+    // Remove scripts, styles, and noscripts first
+    $('script, style, noscript').remove();
+
     // Remove ads and promotional content
     $(
       'div[class*="ad"], div[id*="ad"], .advertisement, .promo, .banner'
@@ -12,8 +15,8 @@ export class HtmlCleaner {
     // Remove navigation elements
     $('.navbox, .navigation-not-searchable, .sidebar, .toc').remove();
 
-    // Remove script and style tags
-    $('script, style, noscript').remove();
+    // Remove header, footer, nav, aside elements
+    $('header, footer, nav, aside, .printfooter, .catlinks, #footer').remove();
 
     // Remove comments
     $('*')
@@ -24,15 +27,59 @@ export class HtmlCleaner {
       .remove();
 
     // Keep main content areas typical of MediaWiki
-    const mainContent = $(
-      '.mw-parser-output, #mw-content-text, .mw-content-ltr'
-    ).html();
+    let content = $('.mw-parser-output');
 
-    if (mainContent) {
-      return mainContent;
+    if (content.length > 0) {
+      // Remove presentational/styling elements but keep their text content
+      const presentationalElements = [
+        'b',
+        'strong',
+        'i',
+        'em',
+        'u',
+        'span',
+        'font',
+        'small',
+        'big',
+        'strike',
+        's',
+        'sub',
+        'sup',
+      ];
+
+      presentationalElements.forEach(tag => {
+        content.find(tag).each(function () {
+          $(this).replaceWith($(this).html() || '');
+        });
+      });
+
+      // Clean up attributes within the main content
+      // Keep only semantic and structural attributes
+      const allowedAttributes = [
+        'href',
+        'src',
+        'alt',
+        'title',
+        'colspan',
+        'rowspan',
+        'id',
+      ];
+
+      content.find('*').each(function () {
+        const element = $(this);
+        const attrs = Object.keys(this.attribs || {});
+
+        attrs.forEach(attr => {
+          if (!allowedAttributes.includes(attr)) {
+            element.removeAttr(attr);
+          }
+        });
+      });
+
+      return content.html() || '';
     }
 
-    // Fallback: remove known unwanted elements and return body content
+    // Fallback: process body content
     $('header, footer, nav, aside, .printfooter, .catlinks, #footer').remove();
 
     return $('body').html() || $.html();
