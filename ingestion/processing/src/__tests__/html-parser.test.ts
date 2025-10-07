@@ -1,9 +1,9 @@
-import { HtmlCleaner } from '../html-cleaner';
+import { HtmlParser } from '../html-parser';
 import * as fs from 'fs';
 import * as path from 'path';
 
-describe('HtmlCleaner', () => {
-  let cleaner: HtmlCleaner;
+describe('HtmlParser', () => {
+  let parser: HtmlParser;
 
   // Mock HTML based on actual BG-Wiki Ninja page structure
   const mockNinjaHtml = `
@@ -127,12 +127,12 @@ describe('HtmlCleaner', () => {
   `;
 
   beforeEach(() => {
-    cleaner = new HtmlCleaner();
+    parser = new HtmlParser();
   });
 
   describe('cleanHtml', () => {
     it('should remove script tags and their content', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).not.toContain('<script');
       expect(result).not.toContain('window.nitroAds');
@@ -140,7 +140,7 @@ describe('HtmlCleaner', () => {
     });
 
     it('should remove style tags and their content', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).not.toContain('<style');
       expect(result).not.toContain('.advertisement');
@@ -148,14 +148,14 @@ describe('HtmlCleaner', () => {
     });
 
     it('should remove advertisement elements', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).not.toContain('class="advertisement"');
       expect(result).not.toContain('bgwiki-leaderboard-desktop');
     });
 
     it('should remove navigation elements', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).not.toContain('class="navbox"');
       expect(result).not.toContain('class="toc"');
@@ -163,7 +163,7 @@ describe('HtmlCleaner', () => {
     });
 
     it('should remove footer, header, and sidebar elements', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).not.toContain('id="footer"');
       expect(result).not.toContain('class="sidebar"');
@@ -171,13 +171,13 @@ describe('HtmlCleaner', () => {
     });
 
     it('should remove HTML comments', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).not.toContain('<!-- This is a HTML comment -->');
     });
 
     it('should preserve main content from mw-parser-output', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       // Should preserve the main content
       expect(result).toContain('Ninja is a job that excels at evasion');
@@ -188,7 +188,7 @@ describe('HtmlCleaner', () => {
     });
 
     it('should preserve table structure and content', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).toContain('<table');
       expect(result).toContain('<tr>');
@@ -200,7 +200,7 @@ describe('HtmlCleaner', () => {
     });
 
     it('should preserve images and semantic attributes', () => {
-      const result = cleaner.cleanHtml(mockNinjaHtml);
+      const result = parser.cleanHtml(mockNinjaHtml);
 
       expect(result).toContain('<img');
       expect(result).toContain('Ninja.jpg');
@@ -213,7 +213,7 @@ describe('HtmlCleaner', () => {
 
   describe('extractTitle', () => {
     it('should extract title from firstHeading element', () => {
-      const title = cleaner.extractTitle(mockNinjaHtml);
+      const title = parser.extractTitle(mockNinjaHtml);
 
       expect(title).toBe('Ninja');
     });
@@ -226,7 +226,7 @@ describe('HtmlCleaner', () => {
         </html>
       `;
 
-      const title = cleaner.extractTitle(htmlWithoutFirstHeading);
+      const title = parser.extractTitle(htmlWithoutFirstHeading);
 
       expect(title).toBe('Test Page'); // HtmlCleaner should strip "- BG FFXI Wiki" suffix
     });
@@ -234,7 +234,7 @@ describe('HtmlCleaner', () => {
     it('should return "Unknown Title" if no title found', () => {
       const htmlWithoutTitle = '<html><body><div>Content</div></body></html>';
 
-      const title = cleaner.extractTitle(htmlWithoutTitle);
+      const title = parser.extractTitle(htmlWithoutTitle);
 
       expect(title).toBe('Unknown Title');
     });
@@ -242,7 +242,7 @@ describe('HtmlCleaner', () => {
 
   describe('extractLastModified', () => {
     it('should extract date from footer-info-lastmod element', () => {
-      const lastModified = cleaner.extractLastModified(mockNinjaHtml);
+      const lastModified = parser.extractLastModified(mockNinjaHtml);
 
       expect(lastModified).toBeInstanceOf(Date);
       expect(lastModified?.getFullYear()).toBe(2024);
@@ -254,7 +254,7 @@ describe('HtmlCleaner', () => {
       const htmlWithoutDate =
         '<html><body><div>Content without date</div></body></html>';
 
-      const lastModified = cleaner.extractLastModified(htmlWithoutDate);
+      const lastModified = parser.extractLastModified(htmlWithoutDate);
 
       expect(lastModified).toBeNull();
     });
@@ -268,7 +268,7 @@ describe('HtmlCleaner', () => {
         </html>
       `;
 
-      const lastModified = cleaner.extractLastModified(htmlWithDifferentFormat);
+      const lastModified = parser.extractLastModified(htmlWithDifferentFormat);
 
       expect(lastModified).toBeInstanceOf(Date);
       expect(lastModified?.getFullYear()).toBe(2023);
@@ -276,63 +276,12 @@ describe('HtmlCleaner', () => {
     });
   });
 
-  describe('getContentPreview', () => {
-    it('should remove unwanted elements before generating preview', () => {
-      const preview = cleaner.getContentPreview(mockNinjaHtml);
-
-      expect(preview).not.toContain('window.nitroAds');
-      expect(preview).not.toContain('Contents');
-      expect(preview).not.toContain('Creative Commons');
-    });
-
-    it('should limit preview to maxLength characters', () => {
-      const preview = cleaner.getContentPreview(mockNinjaHtml, 50);
-
-      expect(preview.length).toBeLessThanOrEqual(53); // 50 + "..." = 53
-      expect(preview).toMatch(/\.\.\.$/); // Should end with ...
-    });
-
-    it('should extract meaningful content for preview', () => {
-      const preview = cleaner.getContentPreview(mockNinjaHtml, 200);
-
-      expect(preview).toContain('Ninja');
-      expect(preview).toMatch(/ninja|job|evasion|ninjutsu/i);
-    });
-
-    it('should normalize whitespace in preview', () => {
-      const htmlWithExtraSpaces = `
-        <html>
-          <body>
-            <div class="mw-parser-output">
-              <p>This    has     multiple   spaces</p>
-            </div>
-          </body>
-        </html>
-      `;
-
-      const preview = cleaner.getContentPreview(htmlWithExtraSpaces);
-
-      expect(preview).toBe('This has multiple spaces');
-    });
-
-    it('should return content without ellipsis if under maxLength', () => {
-      const shortHtml =
-        '<html><body><div class="mw-parser-output">Short content</div></body></html>';
-
-      const preview = cleaner.getContentPreview(shortHtml, 200);
-
-      expect(preview).toBe('Short content');
-      expect(preview).not.toContain('...');
-    });
-  });
-
   describe('integration tests', () => {
     it('should process a complete wiki page and extract all information', () => {
       // Test the full pipeline
-      const cleanedHtml = cleaner.cleanHtml(mockNinjaHtml);
-      const title = cleaner.extractTitle(mockNinjaHtml);
-      const lastModified = cleaner.extractLastModified(mockNinjaHtml);
-      const preview = cleaner.getContentPreview(cleanedHtml, 100);
+      const cleanedHtml = parser.cleanHtml(mockNinjaHtml);
+      const title = parser.extractTitle(mockNinjaHtml);
+      const lastModified = parser.extractLastModified(mockNinjaHtml);
 
       // Verify all methods work together
       expect(title).toBe('Ninja');
@@ -340,8 +289,6 @@ describe('HtmlCleaner', () => {
       expect(cleanedHtml).toContain('Ninja is a job');
       expect(cleanedHtml).not.toContain('<script');
       expect(cleanedHtml).not.toContain('class="toc"');
-      expect(preview).toContain('Ninja');
-      expect(preview.length).toBeLessThanOrEqual(103); // 100 + "..." = 103
     });
 
     it('should handle malformed HTML gracefully', () => {
@@ -358,27 +305,23 @@ describe('HtmlCleaner', () => {
       `;
 
       expect(() => {
-        const cleaned = cleaner.cleanHtml(malformedHtml);
-        const title = cleaner.extractTitle(malformedHtml);
-        const preview = cleaner.getContentPreview(cleaned);
+        const cleaned = parser.cleanHtml(malformedHtml);
+        const title = parser.extractTitle(malformedHtml);
 
         expect(title).toBe('Test');
         expect(cleaned).toContain('Some content');
-        expect(preview).toContain('Some content');
       }).not.toThrow();
     });
 
     it('should handle empty or minimal HTML', () => {
       const minimalHtml = '<html><body></body></html>';
 
-      const cleaned = cleaner.cleanHtml(minimalHtml);
-      const title = cleaner.extractTitle(minimalHtml);
-      const lastModified = cleaner.extractLastModified(minimalHtml);
-      const preview = cleaner.getContentPreview(cleaned);
+      const cleaned = parser.cleanHtml(minimalHtml);
+      const title = parser.extractTitle(minimalHtml);
+      const lastModified = parser.extractLastModified(minimalHtml);
 
       expect(title).toBe('Unknown Title');
       expect(lastModified).toBeNull();
-      expect(preview).toBe('');
       expect(cleaned).toBeDefined();
     });
   });
@@ -398,7 +341,7 @@ describe('HtmlCleaner', () => {
       );
 
       // Process the input HTML
-      const actualHtml = cleaner.cleanHtml(inputHtml);
+      const actualHtml = parser.cleanHtml(inputHtml);
 
       // Compare actual output with expected output
       expect(actualHtml).toBe(expectedHtml);
@@ -410,7 +353,7 @@ describe('HtmlCleaner', () => {
         'utf-8'
       );
 
-      const title = cleaner.extractTitle(inputHtml);
+      const title = parser.extractTitle(inputHtml);
 
       expect(title).toBe('Ninja');
     });
@@ -421,7 +364,7 @@ describe('HtmlCleaner', () => {
         'utf-8'
       );
 
-      const lastModified = cleaner.extractLastModified(inputHtml);
+      const lastModified = parser.extractLastModified(inputHtml);
 
       expect(lastModified).toBeInstanceOf(Date);
       expect(lastModified?.getFullYear()).toBeGreaterThanOrEqual(2024);

@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 
-export class HtmlCleaner {
+export class HtmlParser {
   cleanHtml(html: string): string {
     const $ = cheerio.load(html);
 
@@ -146,18 +146,5 @@ export class HtmlCleaner {
     if (title) return title.replace(' - BG FFXI Wiki', '');
 
     return 'Unknown Title';
-  }
-
-  getContentPreview(html: string, maxLength = 200): string {
-    const $ = cheerio.load(html);
-
-    // Remove unwanted elements before getting text
-    $('script, style, .navbox, .infobox, .toc').remove();
-
-    const text = $.text().replace(/\s+/g, ' ').trim();
-
-    return text.length > maxLength
-      ? text.substring(0, maxLength) + '...'
-      : text;
   }
 }

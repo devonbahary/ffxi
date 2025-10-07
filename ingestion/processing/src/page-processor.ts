@@ -1,11 +1,11 @@
 import axios, { AxiosError } from 'axios';
-import { HtmlCleaner } from './html-cleaner';
+import { HtmlParser } from './html-parser';
 import { RateLimiter } from './rate-limiter';
 import { RedisQueue } from './redis-queue';
 import { BgWikiPageRepository, initializeDatabase } from '@ffxi/sql';
 
 export class PageProcessor {
-  private htmlCleaner: HtmlCleaner;
+  private htmlParser: HtmlParser;
   private rateLimiter: RateLimiter;
   private redisQueue: RedisQueue;
   private repository: BgWikiPageRepository;
@@ -13,7 +13,7 @@ export class PageProcessor {
   private globalCooldownKey = 'bg-wiki-crawler-cooldown';
 
   constructor(workerId?: string) {
-    this.htmlCleaner = new HtmlCleaner();
+    this.htmlParser = new HtmlParser();
     this.rateLimiter = new RateLimiter(2000); // 0.5 QPS
     this.redisQueue = new RedisQueue();
     this.repository = new BgWikiPageRepository();
@@ -126,8 +126,8 @@ export class PageProcessor {
     const rawHtml = response.data;
 
     // Extract last modified date
-    const lastModified = this.htmlCleaner.extractLastModified(rawHtml);
-    const title = this.htmlCleaner.extractTitle(rawHtml);
+    const lastModified = this.htmlParser.extractLastModified(rawHtml);
+    const title = this.htmlParser.extractTitle(rawHtml);
 
     console.log(`  Title: ${title}`);
     if (lastModified) {
@@ -156,10 +156,7 @@ export class PageProcessor {
 
     if (shouldUpdate) {
       // Clean the HTML
-      const cleanedHtml = this.htmlCleaner.cleanHtml(rawHtml);
-      const preview = this.htmlCleaner.getContentPreview(cleanedHtml);
-
-      console.log(`  Content preview: ${preview}`);
+      const cleanedHtml = this.htmlParser.cleanHtml(rawHtml);
 
       // Save to database
       await this.repository.upsertPage(url, cleanedHtml, new Date());
