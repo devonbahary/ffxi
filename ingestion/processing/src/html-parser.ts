@@ -59,10 +59,8 @@ export class HtmlParser {
         'href',
         'src',
         'alt',
-        'title',
         'colspan',
         'rowspan',
-        'id',
       ];
 
       content.find('*').each(function () {
@@ -76,6 +74,9 @@ export class HtmlParser {
         });
       });
 
+      // Simplify structure - remove layout elements and empty nodes
+      this.simplifyStructure(content);
+
       return content.html() || '';
     }
 
@@ -83,6 +84,45 @@ export class HtmlParser {
     $('header, footer, nav, aside, .printfooter, .catlinks, #footer').remove();
 
     return $('body').html() || $.html();
+  }
+
+  private simplifyStructure(content: any): void {
+    const $ = cheerio.load('');
+
+    // Remove divs and spans - pure layout elements
+    content.find('div, span').each(function (this: any) {
+      const $this = $(this);
+      $this.replaceWith($this.html() || '');
+    });
+
+    // Remove tbody - implied in HTML5
+    content.find('tbody').each(function (this: any) {
+      const $this = $(this);
+      $this.replaceWith($this.html() || '');
+    });
+
+    // Remove empty elements (but keep images)
+    content.find('*').each(function (this: any) {
+      const $this = $(this);
+      const hasText = $this.text().trim() !== '';
+      const hasImages = $this.find('img').length > 0;
+      const isImage = $this.prop('tagName') === 'IMG';
+
+      if (!hasText && !hasImages && !isImage) {
+        $this.remove();
+      }
+    });
+
+    // Normalize whitespace in text nodes
+    content.find('*').each(function (this: any) {
+      const $this = $(this);
+      $this.contents().each(function (this: any) {
+        if (this.type === 'text' && this.data) {
+          // Collapse multiple spaces/newlines to single space
+          this.data = this.data.replace(/\s+/g, ' ');
+        }
+      });
+    });
   }
 
   extractLastModified(html: string): Date | null {
