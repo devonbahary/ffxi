@@ -118,7 +118,7 @@ export class PageProcessor {
     // Fetch the web page
     const response = await axios.get(url, {
       headers: {
-        'User-Agent': `FFXI-Crawler/1.0 (Educational Purpose; Worker: ${this.workerId})`,
+        'User-Agent': `${process.env.CRAWLER_USER_AGENT || 'FFXI-Crawler/1.0 (Educational Purpose)'}; Worker: ${this.workerId}`,
       },
       timeout: 15000,
     });
